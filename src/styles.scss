@@ -1,0 +1,28 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+
+.period-input{
+  display: flex;
+  border: solid 1px black;
+  justify-content: space-around;
+  // label {
+  //   width: 40%;
+  // }
+
+  h3 {
+    font-size: 10px;
+    width: 15%;
+  }
+  span{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  label{
+    display: flex;
+    flex-direction: column;
+  }
+}
