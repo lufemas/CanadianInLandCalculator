@@ -11,7 +11,7 @@ const formatDate = (dateToFormat: any) => {
 
 // @ts-ignore 
 export default function PeriodInput({ id = '', onChange, onRemove, inputValue='', loadArriveDate='', loadDepartureDate='' }) {
-  // console.log('Single, inputValue', inputValue)
+  console.log('Single, inputValue', inputValue)
   const [arriveDate, setArriveDate] = useState("");
   const [departureDate, setDepartureDate] = useState("");
   const [daysInLand, setDaysInLand] = useState(0);
@@ -41,20 +41,27 @@ export default function PeriodInput({ id = '', onChange, onRemove, inputValue=''
 
     setFullDaysInLand( isPR ? totalDaysInLand : totalDaysInLand / 2);
 
-    onChange({ id, arriveDate, departureDate, daysInLand, fullDaysInLand, isPR });
+    // onChange({ id, arriveDate, departureDate, daysInLand, fullDaysInLand, isPR });
+
+    console.log('---------------------------------------------------')
+    console.log('arriveDate, departureDate, isPR', [arriveDate, departureDate, isPR])
+    console.log('fullDaysInLand', fullDaysInLand)
+    console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+
   }, [arriveDate, departureDate, isPR]);
 
   useEffect(() => {
     // console.log("daysInLand", daysInLand); // Output: 7
     onChange({ id, arriveDate, departureDate, daysInLand, fullDaysInLand, isPR });
-  }, [daysInLand]);
+  }, [daysInLand, fullDaysInLand]);
 
   useEffect(()=>{
-    // if(inputValue) {
-    //   console.log('got inputValue', inputValue)
-    //   setArriveDate(inputValue["arriveDate"]);
-    //   setDepartureDate(inputValue["departureDate"]);
-    // }
+    if(inputValue) {
+      console.log('got inputValue', inputValue)
+      setArriveDate(inputValue["arriveDate"]);
+      setDepartureDate(inputValue["departureDate"]);
+      setIsPR(inputValue['isPR'])
+    }
     console.log("loadArriveDate", loadArriveDate)
 
     if(loadArriveDate != '') {
@@ -72,25 +79,25 @@ export default function PeriodInput({ id = '', onChange, onRemove, inputValue=''
   return (
     <div className="period-input">
       <h3>{id || "-"}</h3>
-      <label htmlFor="pr-checkbox"> PR
-        <input type="checkbox" name="pr-checkbox" id="pr-checkbox" checked={isPR} onChange={()=>setIsPR(wasPR => !wasPR)}/>
+      <label htmlFor={"pr-checkbox-"+id}> PR
+        <input type="checkbox" name={"pr-checkbox-"+id} id={"pr-checkbox-"+id} checked={isPR} onChange={()=>setIsPR(wasPR => !wasPR)}/>
       </label>
-      <label htmlFor="dateIn">
+      <label htmlFor={"dateIn-"+id}>
         Arrive Date
         <input
           type="date"
-          name="dateIn"
-          id="dateIn"
+          name={"dateIn-"+id}
+          id={"dateIn-"+id}
           value={arriveDate}
           onChange={(e) => {console.log("e.target.value", e.target.value ); setArriveDate(e.target.value)}}
         />
       </label>
-      <label htmlFor="dateIn">
+      <label htmlFor={"dateOut-"+id}>
         Departure Date
         <input
           type="date"
-          name="dateIn"
-          id="dateIn"
+          name={"dateOut-"+id}
+          id={"dateOut-"+id}
           value={departureDate}
           onChange={(e) => setDepartureDate(e.target.value)}
         />
