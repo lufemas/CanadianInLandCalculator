@@ -11,7 +11,7 @@ const formatDate = (dateToFormat: any) => {
 
 // @ts-ignore 
 export default function PeriodInput({ id = '', onChange, onRemove, inputValue='', loadArriveDate='', loadDepartureDate='' }) {
-  console.log('Single, inputValue', inputValue)
+  // console.log('Single, inputValue', inputValue)
   const [arriveDate, setArriveDate] = useState("");
   const [departureDate, setDepartureDate] = useState("");
   const [daysInLand, setDaysInLand] = useState(0);
