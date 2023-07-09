@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import Button from '@mui/material/Button';
+import { IconButton } from "@mui/material";
+import DeleteIcon from '@mui/icons-material/Delete';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs, { Dayjs } from "dayjs";
 
 const formatDate = (dateToFormat: any) => {
   return new Date(dateToFormat).toLocaleDateString("en-GB", {
@@ -12,42 +17,30 @@ const formatDate = (dateToFormat: any) => {
 // @ts-ignore 
 export default function PeriodInput({ id = '', onChange, onRemove, inputValue='', loadArriveDate='', loadDepartureDate='' }) {
   // console.log('Single, inputValue', inputValue)
-  const [arriveDate, setArriveDate] = useState("");
-  const [departureDate, setDepartureDate] = useState("");
+  // const [arriveDate, setArriveDate] = useState("");
+  const [arriveDate, setArriveDate] = useState<Dayjs | null>(null);
+  // const [departureDate, setDepartureDate] = useState("");
+  const [departureDate, setDepartureDate] = useState<Dayjs | null>(null);
   const [daysInLand, setDaysInLand] = useState(0);
   const [fullDaysInLand, setFullDaysInLand] = useState(0);
   const [isPR, setIsPR] = useState(true);
 
   const handleDateChange = (dateChanged: string) => {
-    setArriveDate(dateChanged);
+    setArriveDate(dayjs(dateChanged));
     // console.log("dateChanged", dateChanged);
   };
 
-  const calculateDaysInLand = (initialDate: Date, finalDate: Date) => {
-    const date1 = new Date(initialDate);
-    const date2 = new Date(finalDate);
-
-    const timeDiff = date2.getTime() - date1.getTime();
-    const daysDiff = Math.floor(timeDiff / (24 * 60 * 60 * 1000));
-
-    // console.log("daysDiff +1", daysDiff + 1); // Output: 7
-
-    return (daysDiff + 1) || 0;
-  };
-
   useEffect(() => {
-    const totalDaysInLand = calculateDaysInLand(new Date(arriveDate), new Date(departureDate));
+    // const totalDaysInLand = calculateDaysInLand(arriveDate?.toDate(), arriveDate?.toDate());
+    // setDaysInLand(totalDaysInLand);
+
+    const totalDaysInLand = departureDate?.diff(arriveDate, 'days');
+    // setDaysInLand(arriveDate.diff(departureDate))
     setDaysInLand(totalDaysInLand);
 
     setFullDaysInLand( isPR ? totalDaysInLand : totalDaysInLand / 2);
 
     // onChange({ id, arriveDate, departureDate, daysInLand, fullDaysInLand, isPR });
-
-    console.log('---------------------------------------------------')
-    console.log('arriveDate, departureDate, isPR', [arriveDate, departureDate, isPR])
-    console.log('fullDaysInLand', fullDaysInLand)
-    console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
-
   }, [arriveDate, departureDate, isPR]);
 
   useEffect(() => {
@@ -58,22 +51,23 @@ export default function PeriodInput({ id = '', onChange, onRemove, inputValue=''
   useEffect(()=>{
     if(inputValue) {
       console.log('got inputValue', inputValue)
-      setArriveDate(inputValue["arriveDate"]);
-      setDepartureDate(inputValue["departureDate"]);
+      // setArriveDate(inputValue["arriveDate"]);
+      setArriveDate(dayjs(inputValue["arriveDate"]));
+      setDepartureDate(dayjs(inputValue["departureDate"]));
       setIsPR(inputValue['isPR'])
     }
     console.log("loadArriveDate", loadArriveDate)
 
     if(loadArriveDate != '') {
       console.log("with loadArriveDate", loadArriveDate)
-      setArriveDate(loadArriveDate)
+      setArriveDate(dayjs(loadArriveDate))
       console.log("arriveDate", arriveDate)
     }
 
     if(loadDepartureDate != '') {
-      console.log("with loadDepartureDate", loadDepartureDate)
-      setDepartureDate(loadDepartureDate)
-      console.log("DepartureDate", departureDate)
+      console.log("with loadDepartureDate", loadDepartureDate);
+      setDepartureDate(dayjs(loadDepartureDate));
+      console.log("DepartureDate", departureDate);
     }
   },[])
   return (
@@ -82,7 +76,17 @@ export default function PeriodInput({ id = '', onChange, onRemove, inputValue=''
       <label htmlFor={"pr-checkbox-"+id}> PR
         <input type="checkbox" name={"pr-checkbox-"+id} id={"pr-checkbox-"+id} checked={isPR} onChange={()=>setIsPR(wasPR => !wasPR)}/>
       </label>
-      <label htmlFor={"dateIn-"+id}>
+      <DatePicker 
+        label="Arrive Date 🌐 🡆 🇨🇦"
+        value={arriveDate}
+        onChange={(newDate) => {console.log("newDate", newDate ); setArriveDate(newDate)}}
+      />
+      <DatePicker 
+        label="Departure Date 🇨🇦 🡆 🌐"
+        value={departureDate}
+        onChange={(newDate) => {console.log("newDate", newDate ); setDepartureDate(newDate)}}
+      />
+      {/* <label htmlFor={"dateIn-"+id}>
         Arrive Date
         <input
           type="date"
@@ -91,8 +95,8 @@ export default function PeriodInput({ id = '', onChange, onRemove, inputValue=''
           value={arriveDate}
           onChange={(e) => {console.log("e.target.value", e.target.value ); setArriveDate(e.target.value)}}
         />
-      </label>
-      <label htmlFor={"dateOut-"+id}>
+      </label> */}
+      {/* <label htmlFor={"dateOut-"+id}>
         Departure Date
         <input
           type="date"
@@ -101,16 +105,19 @@ export default function PeriodInput({ id = '', onChange, onRemove, inputValue=''
           value={departureDate}
           onChange={(e) => setDepartureDate(e.target.value)}
         />
-      </label>
+      </label> */}
       <span>
         {daysInLand} Day{daysInLand > 1 && "s"}
       </span>
       <span>
         {fullDaysInLand} Day{daysInLand > 1 && "s"}
       </span>
-      <button onClick={onRemove ? ()=>onRemove(id) : () => {}}>
+      <IconButton aria-label="delete" size="medium" onClick={onRemove ? ()=>onRemove(id) : () => {}}>
+        <DeleteIcon fontSize="inherit" />
+      </IconButton>
+      {/* <button onClick={onRemove ? ()=>onRemove(id) : () => {}}>
         <span role="img">🗑️</span>
-      </button>
+      </button> */}
     </div>
   );
 }

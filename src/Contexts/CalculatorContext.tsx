@@ -1,3 +1,4 @@
+import { Dayjs } from 'dayjs';
 import React, { createContext, useEffect, useState } from 'react';
 
 const CalculatorContext = createContext(null);
@@ -9,6 +10,7 @@ const CalculatorProvider = ({ children }) => {
   const [netDays, setNetDays] = useState(0);
   const [prDays, setPrDays] = useState(0);
   const [remainingDays, setRemainingDays] = useState(0);
+  const [prDate, setPrDate] = useState<Dayjs | null>(null);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [fiveYearsAgoDate, setFiveYearsAgoDate] = useState(new Date(currentDate.getFullYear() - 5, currentDate.getMonth(), currentDate.getDate()));  
   
@@ -119,6 +121,8 @@ const CalculatorProvider = ({ children }) => {
         netDays,
         prDays,
         remainingDays,
+        prDate,
+        setPrDate,
         currentDate,
         fiveYearsAgoDate,
         getUrl

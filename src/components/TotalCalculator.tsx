@@ -1,9 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import PeriodInput from "../components/PeriodInput";
 import { v4 as uuidv4 } from "uuid";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
 import { CalculatorContext } from "../Contexts/CalculatorContext";
+import { IconButton } from "@mui/material";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import { DatePicker } from "@mui/x-date-pickers";
 
 export default function App() {
   const { 
@@ -15,6 +18,8 @@ export default function App() {
           netDays,
           prDays,
           remainingDays,
+          prDate,
+          setPrDate,
           currentDate,
           fiveYearsAgoDate,
           getUrl,
@@ -30,7 +35,7 @@ export default function App() {
 
   const onInputChange = (changeInput: any) => {
     const id = changeInput.id;
-    // console.log("chaging:", changeInput);
+    // console.log("changing:", changeInput);
 
     Object.values(inputValues).forEach( (input: any) => {
       if(!input.id != changeInput.id ) {
@@ -38,7 +43,7 @@ export default function App() {
         // console.log('intersect', intersect)
         // console.log(input)
         if(intersect) {
-          return toast.warn("Overlapping date", {autoClose: 1000,})
+          // return toast.warn("Overlapping date", {autoClose: 1000,})
         }
       }
     })
@@ -163,7 +168,16 @@ export default function App() {
       }
       {/* <PeriodInput /> */}
 
-      <button onClick={addPeriodInput}>➕</button>
+      {/* <button onClick={addPeriodInput}>➕</button> */}
+      <IconButton aria-label="delete" size="medium" onClick={addPeriodInput}>
+        <AddCircleIcon fontSize="inherit" />
+      </IconButton>
+
+      <DatePicker
+        label="PR Card Issue Date 🪪"
+        value={prDate}
+        onChange={(newDate) => {console.log("newDate", newDate ); setPrDate(newDate)}}
+      />
       <p><strong>Gross Total Days in Land:</strong> {grossDays}, <strong>Approximately :</strong> {(grossDays/365).toFixed(1)} years</p>
       <p><strong>Net Total Days in Land: </strong>{netDays}, <strong>Approximately :</strong> {(netDays  /365).toFixed(1)} years</p>
       <p><strong>PR Total Days in Land: </strong>{prDays}, <strong>Approximately :</strong> {(prDays/365).toFixed(1)} years</p>
@@ -189,7 +203,7 @@ export default function App() {
       <br/>
       <a href={getUrl()} target="_blank" rel="noopener noreferrer">{getUrl()}</a>
     {/* </div> */}
-    <ToastContainer></ToastContainer>
+    {/* <ToastContainer></ToastContainer> */}
       </>
   );
 }
