@@ -154,7 +154,7 @@ export default function App() {
 
       { Object.entries(periods).map(([periodKey]) => {
         // console.log('mapping key', periodKey)
-        console.log('periodKey: ', periodKey)
+        // console.log('periodKey: ', periodKey)
         return <PeriodInput 
                 key={periodKey}
                 id={periodKey}
@@ -169,10 +169,11 @@ export default function App() {
       {/* <PeriodInput /> */}
 
       {/* <button onClick={addPeriodInput}>➕</button> */}
-      <IconButton aria-label="delete" size="medium" onClick={addPeriodInput}>
+      <IconButton aria-label="Add new time range" size="large" onClick={addPeriodInput}>
         <AddCircleIcon fontSize="inherit" />
       </IconButton>
-
+      <br />
+      <br />
       <DatePicker
         label="PR Card Issue Date 🪪"
         value={prDate}

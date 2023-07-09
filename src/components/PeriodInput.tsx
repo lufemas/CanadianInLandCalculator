@@ -50,24 +50,24 @@ export default function PeriodInput({ id = '', onChange, onRemove, inputValue=''
 
   useEffect(()=>{
     if(inputValue) {
-      console.log('got inputValue', inputValue)
+      // console.log('got inputValue', inputValue)
       // setArriveDate(inputValue["arriveDate"]);
       setArriveDate(dayjs(inputValue["arriveDate"]));
       setDepartureDate(dayjs(inputValue["departureDate"]));
       setIsPR(inputValue['isPR'])
     }
-    console.log("loadArriveDate", loadArriveDate)
+    // console.log("loadArriveDate", loadArriveDate)
 
     if(loadArriveDate != '') {
-      console.log("with loadArriveDate", loadArriveDate)
+      // console.log("with loadArriveDate", loadArriveDate)
       setArriveDate(dayjs(loadArriveDate))
-      console.log("arriveDate", arriveDate)
+      // console.log("arriveDate", arriveDate)
     }
 
     if(loadDepartureDate != '') {
-      console.log("with loadDepartureDate", loadDepartureDate);
+      // console.log("with loadDepartureDate", loadDepartureDate);
       setDepartureDate(dayjs(loadDepartureDate));
-      console.log("DepartureDate", departureDate);
+      // console.log("DepartureDate", departureDate);
     }
   },[])
   return (

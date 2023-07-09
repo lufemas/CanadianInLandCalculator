@@ -1,4 +1,4 @@
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import React, { createContext, useEffect, useState } from 'react';
 
 const CalculatorContext = createContext(null);
@@ -28,9 +28,21 @@ const CalculatorProvider = ({ children }) => {
       // console.log(`'KEY/VALUE`, key, value);
       grossTotalDaysTemp += value["daysInLand"] || 0;
       netTotalDaysTemp += value["fullDaysInLand"] || 0;
-      if(value["isPR"]) {
+      // if(value["isPR"]) {
 
-        prTotalDaysTemp += value["fullDaysInLand"] || 0;
+      //   prTotalDaysTemp += value["fullDaysInLand"] || 0;
+      // }
+      if(dayjs(value["departureDate"]).isAfter(prDate)) {
+
+        if(dayjs(value["arriveDate"]).isAfter(prDate)) {
+          prTotalDaysTemp += value["fullDaysInLand"];
+        } else {
+          const xnetTotalDaysTemp = dayjs(value["arriveDate"]).diff(prDate, 'days');
+          const xprTotalDaysTemp = prDate.diff(dayjs(value["departureDate"], 'days'));
+          console.log('xnetTotalDaysTemp', xnetTotalDaysTemp)
+          console.log('xprTotalDaysTemp', xprTotalDaysTemp)
+        }
+        console.log('value["departureDate"]', dayjs(value["departureDate"]).toJSON())
       }
     }
     setGrossDays(grossTotalDaysTemp)
@@ -39,7 +51,7 @@ const CalculatorProvider = ({ children }) => {
 
     netTotalDaysTemp = netTotalDaysTemp > 365 ? 354 : netTotalDaysTemp;
     setRemainingDays((365*3) - netTotalDaysTemp - prTotalDaysTemp)
-    console.log(getUrl())
+    // console.log(getUrl())
   }
 
   const getUrl = () => {
@@ -48,15 +60,15 @@ const CalculatorProvider = ({ children }) => {
     // for (const [key, value] of Object.entries(inputValues)) {
     //   dates
     // }
-    console.log('inputValues', Object.entries(periods))
+    // console.log('inputValues', Object.entries(periods))
     const jsonString = JSON.stringify(Object.entries(periods).map(([inputValueKey, inputValue])=>{
       return [inputValue['arriveDate'],inputValue['departureDate'], inputValue['isPR']]
     }));
-    console.log('Generated JsonString', jsonString)
+    // console.log('Generated JsonString', jsonString)
     const encodedJsonString = encodeURIComponent(jsonString);
     // console.log('encodedJsonString', encodedJsonString)
-    console.log('---- USER', user)
-    return window.location.origin + "?user="+ JSON.stringify(user) +"&data=" + jsonString;
+    // console.log('---- USER', user)
+    return window.location.origin + "?user="+ JSON.stringify(user) +"&prDate=" + (prDate?.toJSON() || "") +"&data=" + jsonString;
   }
   const removePeriod = (index: any) => {
     // console.log("removing:", index);
@@ -70,14 +82,7 @@ const CalculatorProvider = ({ children }) => {
 
   };
 
-  useEffect(()=>{
-    console.log(`[CalculatorContext.tsx] Periods:`, periods);
-    calculateTotalDays();
-  }, [periods]);
-
-  // The Query Param  
-  useEffect(() => {
-    console.clear();
+  const loadFromUrl = () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
 
@@ -85,11 +90,14 @@ const CalculatorProvider = ({ children }) => {
     const userJsonString = decodeURIComponent(userEncodedJsonString);
     setUser(JSON.parse(userJsonString));
 
+    const prDateEncodedJsonString = urlParams.get('prDate');
+    setPrDate(dayjs(prDateEncodedJsonString));
+
     const encodedJsonString = urlParams.get('data');
     const jsonString = decodeURIComponent(encodedJsonString);
-    console.log(`jsonString`, jsonString)
-    console.log(`jsonString`, jsonString[115])
-    console.log(`jsonString`, jsonString[116])
+    // console.log(`jsonString`, jsonString)
+    // console.log(`jsonString`, jsonString[115])
+    // console.log(`jsonString`, jsonString[116])
     const data = JSON.parse(jsonString);
 
     if(data){
@@ -100,10 +108,22 @@ const CalculatorProvider = ({ children }) => {
         loadedInputValues = {...loadedInputValues, [key]: {arriveDate: value[0],departureDate: value[1], isPR: value[2]}}
       }
       setPeriods(loadedInputValues)
-      console.log('loadedInputValues', loadedInputValues)
+      // console.log('loadedInputValues', loadedInputValues)
 
     }
-  
+  }
+
+  useEffect(()=>{
+    console.log(`[CalculatorContext.tsx] Periods:`, periods);
+    calculateTotalDays();
+  }, [periods]);
+
+  // The Query Param  
+  useEffect(() => {
+    console.clear();
+
+    loadFromUrl();
+
     return () => {
       
     }
