@@ -160,6 +160,7 @@ export default function App() {
                 id={periodKey}
                 onChange={onInputChange}
                 onRemove={removePeriod}
+                prDate={prDate}
                 loadArriveDate={periods[periodKey]["arriveDate"]}
                 loadDepartureDate={periods[periodKey]["departureDate"]}
                 inputValue={periods[periodKey]}/>

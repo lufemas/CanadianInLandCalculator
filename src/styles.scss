@@ -12,6 +12,12 @@
   // }
   margin-bottom: 1em;
 
+  &.gotPR {
+    background-color: rgb(249, 255, 202);
+  }
+  &.isPR {
+    background-color: rgb(229, 252, 229);
+  }
   h3 {
     font-size: 8px;
     width: 10%;

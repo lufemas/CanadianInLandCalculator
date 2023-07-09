@@ -14,7 +14,6 @@ const CalculatorProvider = ({ children }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [fiveYearsAgoDate, setFiveYearsAgoDate] = useState(new Date(currentDate.getFullYear() - 5, currentDate.getMonth(), currentDate.getDate()));  
   
-  const getPeriods = () => periods;
   const pushPeriod = (newPeriod) => {
     setPeriods(prevPeriods=>({...prevPeriods, [newPeriod.id]: newPeriod}))
   };
@@ -28,21 +27,20 @@ const CalculatorProvider = ({ children }) => {
       // console.log(`'KEY/VALUE`, key, value);
       grossTotalDaysTemp += value["daysInLand"] || 0;
       netTotalDaysTemp += value["fullDaysInLand"] || 0;
-      // if(value["isPR"]) {
 
-      //   prTotalDaysTemp += value["fullDaysInLand"] || 0;
-      // }
-      if(dayjs(value["departureDate"]).isAfter(prDate)) {
+      if(value["departureDate"]?.isAfter(prDate)) {
 
-        if(dayjs(value["arriveDate"]).isAfter(prDate)) {
-          prTotalDaysTemp += value["fullDaysInLand"];
+        if(value["arriveDate"].isAfter(prDate)) {
+          console.log('Is after pr Date', value["arriveDate"].toJSON())
+          console.log('value["fullDaysInLand"', value["fullDaysInLand"])
+          prTotalDaysTemp += value["daysInLand"];
         } else {
-          const xnetTotalDaysTemp = dayjs(value["arriveDate"]).diff(prDate, 'days');
-          const xprTotalDaysTemp = prDate.diff(dayjs(value["departureDate"], 'days'));
-          console.log('xnetTotalDaysTemp', xnetTotalDaysTemp)
-          console.log('xprTotalDaysTemp', xprTotalDaysTemp)
+          netTotalDaysTemp += prDate.diff(value["arriveDate"], 'days');
+          prTotalDaysTemp += value["departureDate"].diff(prDate, 'days') + 1;
         }
-        console.log('value["departureDate"]', dayjs(value["departureDate"]).toJSON())
+        console.log('value["departureDate"]', value["departureDate"].toJSON())
+      } else {
+          netTotalDaysTemp += (value["daysInLand"] / 2) || 0;
       }
     }
     setGrossDays(grossTotalDaysTemp)
@@ -62,7 +60,7 @@ const CalculatorProvider = ({ children }) => {
     // }
     // console.log('inputValues', Object.entries(periods))
     const jsonString = JSON.stringify(Object.entries(periods).map(([inputValueKey, inputValue])=>{
-      return [inputValue['arriveDate'],inputValue['departureDate'], inputValue['isPR']]
+      return [inputValue['arriveDate'],inputValue['departureDate']]
     }));
     // console.log('Generated JsonString', jsonString)
     const encodedJsonString = encodeURIComponent(jsonString);
@@ -105,7 +103,7 @@ const CalculatorProvider = ({ children }) => {
       for (const [key, value] of Object.entries(data)) {
         // console.log('key', key)
         // console.log('value', value)
-        loadedInputValues = {...loadedInputValues, [key]: {arriveDate: value[0],departureDate: value[1], isPR: value[2]}}
+        loadedInputValues = {...loadedInputValues, [key]: {arriveDate: dayjs(value[0]),departureDate: dayjs(value[1])}}
       }
       setPeriods(loadedInputValues)
       // console.log('loadedInputValues', loadedInputValues)
