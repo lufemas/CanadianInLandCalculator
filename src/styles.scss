@@ -4,6 +4,7 @@
 }
 
 .period-input{
+  position: relative;
   display: flex;
   // border: solid 1px black;
   justify-content: space-around;
@@ -12,12 +13,48 @@
   // }
   margin-bottom: 1em;
 
-  &.gotPR {
+  &.got-pr {
+    &::before{
+      content: '🪪';
+      position: absolute;
+      left: 0;
+      bottom: 0;
+    }
     background-color: rgb(249, 255, 202);
   }
-  &.isPR {
+
+  &.is-pr {
     background-color: rgb(229, 252, 229);
   }
+
+  &.older-than-fiver-years {
+    text-decoration: line-through;
+    &::after{
+      content: '❌';
+      position: absolute;
+      left: 0;
+    }
+    // &::after{
+    //   content: ' ';
+    //   width: 90%;
+    //   border-top: solid 1px black;
+    //   position: absolute;
+    //   left: 5%;
+    //   top: 50%;
+    // }
+    background-color: rgb(255, 202, 202);
+  }
+
+  &.on-fiver-years-mark {
+    &::after{
+      content: '⚠️';
+      position: absolute;
+      left: 0;
+    }
+    background-color: rgb(255, 227, 192);
+  }
+
+
   h3 {
     font-size: 8px;
     width: 10%;

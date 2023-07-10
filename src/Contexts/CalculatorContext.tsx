@@ -1,5 +1,5 @@
 import dayjs, { Dayjs } from 'dayjs';
-import React, { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useReducer, useState } from 'react';
 
 const CalculatorContext = createContext(null);
 
@@ -11,8 +11,9 @@ const CalculatorProvider = ({ children }) => {
   const [prDays, setPrDays] = useState(0);
   const [remainingDays, setRemainingDays] = useState(0);
   const [prDate, setPrDate] = useState<Dayjs | null>(null);
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [fiveYearsAgoDate, setFiveYearsAgoDate] = useState(new Date(currentDate.getFullYear() - 5, currentDate.getMonth(), currentDate.getDate()));  
+  const [currentDate, setCurrentDate] = useState(dayjs());
+  // const [fiveYearsAgoDate, setFiveYearsAgoDate] = useState(currentDate.subtract(5, 'year'));  
+  const [fiveYearsAgoDate, setFiveYearsAgoDate] = useReducer(()=>(currentDate.subtract(5, 'year')), currentDate.subtract(5, 'year'))
   
   const pushPeriod = (newPeriod) => {
     setPeriods(prevPeriods=>({...prevPeriods, [newPeriod.id]: newPeriod}))
@@ -24,24 +25,20 @@ const CalculatorProvider = ({ children }) => {
     let netTotalDaysTemp: number = 0;
     let prTotalDaysTemp: number = 0;
     for (const [key, value] of Object.entries(periods)) {
-      // console.log(`'KEY/VALUE`, key, value);
-      grossTotalDaysTemp += value["daysInLand"] || 0;
-      netTotalDaysTemp += value["fullDaysInLand"] || 0;
+      if(fiveYearsAgoDate?.isAfter(value["departureDate"])) continue;
+      grossTotalDaysTemp += value["departureDate"]?.diff(value["arriveDate"], "days") + 1 || 0;
 
       if(value["departureDate"]?.isAfter(prDate)) {
-
         if(value["arriveDate"].isAfter(prDate)) {
-          console.log('Is after pr Date', value["arriveDate"].toJSON())
-          console.log('value["fullDaysInLand"', value["fullDaysInLand"])
-          prTotalDaysTemp += value["daysInLand"];
+          prTotalDaysTemp += value["departureDate"]?.diff(value["arriveDate"], "days") + 1 || 0;
         } else {
-          netTotalDaysTemp += prDate.diff(value["arriveDate"], 'days');
+          netTotalDaysTemp += (prDate.diff(value["arriveDate"], 'days') / 2) + 1;
           prTotalDaysTemp += value["departureDate"].diff(prDate, 'days') + 1;
         }
-        console.log('value["departureDate"]', value["departureDate"].toJSON())
       } else {
-          netTotalDaysTemp += (value["daysInLand"] / 2) || 0;
+          netTotalDaysTemp += ((value["departureDate"]?.diff(value["arriveDate"], "days") + 1)  / 2) || 0;
       }
+
     }
     setGrossDays(grossTotalDaysTemp)
     setNetDays(netTotalDaysTemp)
@@ -112,9 +109,13 @@ const CalculatorProvider = ({ children }) => {
   }
 
   useEffect(()=>{
+    setFiveYearsAgoDate();
+  }, [currentDate]);
+
+  useEffect(()=>{
     console.log(`[CalculatorContext.tsx] Periods:`, periods);
     calculateTotalDays();
-  }, [periods]);
+  }, [periods, fiveYearsAgoDate, currentDate]);
 
   // The Query Param  
   useEffect(() => {
@@ -132,6 +133,7 @@ const CalculatorProvider = ({ children }) => {
     <CalculatorContext  .Provider
       value={{
         user,
+        setUser,
         periods,
         pushPeriod,
         removePeriod,
@@ -142,6 +144,7 @@ const CalculatorProvider = ({ children }) => {
         prDate,
         setPrDate,
         currentDate,
+        setCurrentDate,
         fiveYearsAgoDate,
         getUrl
       }}

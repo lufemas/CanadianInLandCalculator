@@ -6,11 +6,14 @@ import { v4 as uuidv4 } from "uuid";
 import { CalculatorContext } from "../Contexts/CalculatorContext";
 import { IconButton } from "@mui/material";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { DatePicker } from "@mui/x-date-pickers";
+import { DateField, DatePicker } from "@mui/x-date-pickers";
+import TextField from '@mui/material/TextField';
+import { placeholder } from "@babel/types";
 
 export default function App() {
   const { 
           user,
+          setUser,
           periods,
           pushPeriod,
           removePeriod,
@@ -21,6 +24,7 @@ export default function App() {
           prDate,
           setPrDate,
           currentDate,
+          setCurrentDate,
           fiveYearsAgoDate,
           getUrl,
         } = useContext(CalculatorContext)
@@ -63,47 +67,10 @@ export default function App() {
   }
 
   useEffect(() => {
-    // console.clear();
-    // const queryString = window.location.search;
-    // const urlParams = new URLSearchParams(queryString);
-    // const encodedJsonString = urlParams.get('data');
-    // const jsonString = decodeURIComponent(encodedJsonString);
-    // const data = JSON.parse(jsonString);
-    // // console.log( 'jsonString', jsonString)
-    // // console.log( 'parserd', data)
-
-    // if(data){
-    //   let loadedInputValues = {};
-    //   for (const [key, value] of Object.entries(data)) {
-    //     // console.log('key', key)
-    //     // console.log('value', value)
-    //     loadedInputValues = {...loadedInputValues, [key]: {arriveDate: value[0],departureDate: value[1], isPR: value[2]}}
-    //   }
-    //   setInputValues(loadedInputValues)
-    //   console.log('loadedInputValues', loadedInputValues)
-
-    // }
 
   }, []);
 
-  // const calculateTotalDays = () => {
-  //   // Set Gross Total Days
-  //   let grossTotalDaysTemp: number = 0;
-  //   let netTotalDaysTemp: number = 0;
-  //   for (const [key, value] of Object.entries(inputValues)) {
-  //     // console.log(`${key}: ${value}`);
-  //     grossTotalDaysTemp += value["daysInLand"] || 0;
-  //     netTotalDaysTemp += value["fullDaysInLand"] || 0;
-  //   }
-  //   // console.log('grossTotalDaysTemp', grossTotalDaysTemp)
-  //   setGrossTotalDays(grossTotalDaysTemp)
-  //   setNetTotalDays(netTotalDaysTemp)
-
-  //   console.log(getUrl())
-  // }
   useEffect(() => {
-    // addPeriodInput();
-    // console.log("useEffect inputValues", inputValues);
 
     let isAllPeriodsFilles = true;
 
@@ -132,26 +99,6 @@ export default function App() {
     {/* <div className="total-calculator"> */}
       <h1>{user?.firstName || 'Anonymous'}'s Calculator</h1>
 
-      {/* <PeriodInput id={1} onChange={onInputChange} onRemove={onRemoveInput} /> */}
-
-      {/* {periodInputs.map((periodInput, index) => {
-        return periodInput;
-      })} */}
-
-      {/* { Object.keys(inputValues).map((inputValueKey) => {
-        // console.log('mapping key', inputValueKey)
-        return <PeriodInput 
-                key={inputValueKey}
-                id={inputValueKey}
-                onChange={onInputChange}
-                onRemove={onRemoveInput}
-                loadArriveDate={inputValues[inputValueKey]["arriveDate"]}
-                loadDepartureDate={inputValues[inputValueKey]["departureDate"]}
-                inputValue={inputValues[inputValueKey]}/>
-        
-        })
-      } */}
-
       { Object.entries(periods).map(([periodKey]) => {
         // console.log('mapping key', periodKey)
         // console.log('periodKey: ', periodKey)
@@ -161,6 +108,7 @@ export default function App() {
                 onChange={onInputChange}
                 onRemove={removePeriod}
                 prDate={prDate}
+                fiveYearsAgoDate={fiveYearsAgoDate}
                 loadArriveDate={periods[periodKey]["arriveDate"]}
                 loadDepartureDate={periods[periodKey]["departureDate"]}
                 inputValue={periods[periodKey]}/>
@@ -187,23 +135,28 @@ export default function App() {
       <p><strong>You need to stay in Canada for more: </strong>{remainingDays}, <strong>Approximately :</strong> {(remainingDays/365).toFixed(1)} years</p>
 
       <br/>
-      <p><strong>Five Years Ago was: </strong>{fiveYearsAgoDate.toLocaleDateString("en-GB", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit"
-        })}
+      <DateField
+        label="5 Years Ago:"
+        value={fiveYearsAgoDate}
+        readOnly={true}
+      />
+      <DatePicker
+        label="Current Date:"
+        value={currentDate}
+        onChange={(newDate) => {console.log("newDate", newDate ); setCurrentDate(newDate)}}
+      />
+      {/* <p><strong>Five Years Ago was: </strong>{fiveYearsAgoDate.toJSON()}
       </p>
-      <p><strong>Current Date: </strong>{currentDate.toLocaleDateString("en-GB", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit"
-        })}
-      </p>
+      <p><strong>Current Date: </strong>{currentDate.toJSON()}
+      </p> */}
       {/* <button onClick={()=>calculateTotalDays()}>Calculate</button> */}
       <br/>
       <br/>
+      <TextField id="first-name" label="First Name" variant="standard" value={user?.firstName} placeholder="First Name" onChange={(event)=>setUser({...user, firstName: event.target.value})} />
       <br/>
-      <a href={getUrl()} target="_blank" rel="noopener noreferrer">{getUrl()}</a>
+      <br/>
+
+      <a href={getUrl()} target="_blank" rel="noopener noreferrer">Your Link 🔗</a>
     {/* </div> */}
     {/* <ToastContainer></ToastContainer> */}
       </>
